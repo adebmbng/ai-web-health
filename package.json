@@ -3,7 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "AI-powered food detection camera app with NOVA classification system",
+  "description": "AI-powered food detection camera app helping families manage dietary restrictions like H. Pylori by identifying UPF foods",
+  "author": {
+    "name": "Ade Bambang Kurnia",
+    "email": "adebmbng@gmail.com",
+    "url": "https://www.linkedin.com/in/adebmbng/"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

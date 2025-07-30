@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle, AlertCircle, Info, X, Copy, Share2 } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info, X, Copy, Share2, Heart } from 'lucide-react';
 import type { FoodAnalysisResponse } from '../types/food';
 import { getCategoryColors, getCategoryInfo, getConfidenceLevel, formatConfidence } from '../utils/categoryMapping';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
@@ -15,6 +15,7 @@ interface FoodResultProps {
 
 export function FoodResult({ result, onClose, onNewAnalysis, processingTime }: FoodResultProps) {
     const [showDetails, setShowDetails] = useState(false);
+    const [showAbout, setShowAbout] = useState(false);
     const [copied, setCopied] = useState(false);
 
     const categoryColors = getCategoryColors(result.category);
@@ -28,6 +29,9 @@ Category: ${categoryInfo.label}
 Confidence: ${formatConfidence(result.confidence)}
 Description: ${result.explanation}
 ${result.nutritional_notes ? `Notes: ${result.nutritional_notes}` : ''}
+
+Analyzed with AI Food Detection - helping families avoid UPF foods. Built by @dbmkrn
+LinkedIn: https://www.linkedin.com/in/adebmbng/
     `.trim();
 
         const success = await copyToClipboard(text);
@@ -41,8 +45,8 @@ ${result.nutritional_notes ? `Notes: ${result.nutritional_notes}` : ''}
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: 'Food Analysis Result',
-                    text: `${result.detected_food} - ${categoryInfo.label} (${formatConfidence(result.confidence)} confidence)`,
+                    title: 'AI Food Detection - Helping Families Make Informed Choices',
+                    text: `${result.detected_food} - ${categoryInfo.label} (${formatConfidence(result.confidence)} confidence)\n\nAnalyzed with AI Food Detection - helping families avoid UPF foods. Built by @dbmkrn\n\nhttps://www.linkedin.com/in/adebmbng/`,
                 });
             } catch (error) {
                 console.log('Share cancelled or failed:', error);
@@ -209,6 +213,47 @@ ${result.nutritional_notes ? `Notes: ${result.nutritional_notes}` : ''}
                                                         : 'Packaged snacks, soft drinks, ready meals, processed meats'
                                             }
                                         </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* About This App */}
+                        <div className="pt-2 border-t">
+                            <button
+                                onClick={() => setShowAbout(!showAbout)}
+                                className="w-full text-left text-sm text-gray-600 hover:text-gray-800"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <span>About This App</span>
+                                    <span className={`transform transition-transform ${showAbout ? 'rotate-180' : ''}`}>
+                                        ▼
+                                    </span>
+                                </div>
+                            </button>
+
+                            {showAbout && (
+                                <div className="mt-2 p-3 bg-blue-50 rounded-lg">
+                                    <div className="flex items-start gap-2 mb-2">
+                                        <Heart className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                                        <div>
+                                            <p className="text-sm text-blue-800 font-medium mb-1">Built for Family Health</p>
+                                            <p className="text-sm text-blue-700 mb-2">
+                                                Created by <strong>Ade Bambang Kurnia</strong> to help his daughter Alula manage H. Pylori bacteria. 
+                                                Following doctor's advice to avoid chocolate and minimize Ultra-Processed Foods (UPF), 
+                                                this app helps families make informed food choices.
+                                            </p>
+                                            <p className="text-xs text-blue-600">
+                                                <a 
+                                                    href="https://www.linkedin.com/in/adebmbng/" 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="hover:underline"
+                                                >
+                                                    Connect with Ade on LinkedIn →
+                                                </a>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             )}

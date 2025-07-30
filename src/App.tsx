@@ -98,7 +98,7 @@ function App() {
                   AI Food Detection
                 </h1>
                 <p className="text-xs text-gray-500">
-                  Powered by OpenRouter
+                  Helping families avoid UPF foods
                 </p>
               </div>
             </div>
@@ -118,10 +118,10 @@ function App() {
           {/* Instructions */}
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Detect Food Processing Level
+              Analyze Food Processing Level
             </h2>
             <p className="text-gray-600 text-sm">
-              Point your camera at food to analyze its processing level using AI
+              Point your camera at food to check if it's safe for dietary restrictions like H. Pylori
             </p>
           </div>
 
@@ -211,6 +211,18 @@ function App() {
           <div className="mt-8 text-center text-xs text-gray-500">
             <p>Classification based on the NOVA food system</p>
             <p className="mt-1">
+              Helping families make informed food choices - Created by Ade Bambang Kurnia
+            </p>
+            <p className="mt-1">
+              <a 
+                href="https://www.linkedin.com/in/adebmbng/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                Connect on LinkedIn
+              </a>
+              {' • '}
               Powered by OpenRouter • Built with React & TypeScript
             </p>
           </div>
