@@ -9,7 +9,6 @@ import { validateEnvVars, supportsCameraAPI } from './utils/common';
 import type { CapturedImage } from './types/camera';
 
 function App() {
-  const [capturedImage, setCapturedImage] = useState<CapturedImage | null>(null);
   const [showResult, setShowResult] = useState(false);
 
   const {
@@ -24,8 +23,6 @@ function App() {
   const cameraSupported = supportsCameraAPI();
 
   const handleImageCapture = async (image: CapturedImage) => {
-    setCapturedImage(image);
-
     // Start analysis immediately
     const result = await analyzeImage(image);
 
@@ -36,13 +33,11 @@ function App() {
 
   const handleCloseResult = () => {
     setShowResult(false);
-    setCapturedImage(null);
     clearResult();
   };
 
   const handleNewAnalysis = () => {
     setShowResult(false);
-    setCapturedImage(null);
     clearResult();
   };
 
@@ -228,7 +223,7 @@ function App() {
           result={detectionState.result}
           onClose={handleCloseResult}
           onNewAnalysis={handleNewAnalysis}
-          processingTime={detectionState.processingTime}
+          processingTime={detectionState.processingTime ?? undefined}
         />
       )}
     </div>

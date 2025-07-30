@@ -29,8 +29,6 @@ export class OpenRouterService {
      * Analyze food image using OpenRouter LLM
      */
     async analyzeFoodImage(imageBase64: string): Promise<ApiResponse<FoodAnalysisResponse>> {
-        const startTime = Date.now();
-
         try {
             if (!API_KEY) {
                 throw new Error('OpenRouter API key not configured');

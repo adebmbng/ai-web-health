@@ -1,23 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Camera, CameraOff, RotateCcw, Settings } from 'lucide-react';
 import { useCamera } from '../hooks/useCamera';
 import { Button } from './ui/Button';
 import { LoadingSpinner } from './ui/LoadingSpinner';
 import { cn } from '../utils/common';
+import type { CapturedImage } from '../types/camera';
 
 interface CameraViewProps {
     onCapture: (image: CapturedImage) => void;
     isCapturing?: boolean;
     className?: string;
-}
-
-interface CapturedImage {
-    blob: Blob;
-    dataUrl: string;
-    width: number;
-    height: number;
-    size: number;
-    timestamp: number;
 }
 
 export function CameraView({ onCapture, isCapturing = false, className }: CameraViewProps) {

@@ -22,7 +22,7 @@ interface UseCameraReturn {
     refreshDevices: () => Promise<void>;
 
     // Refs
-    videoRef: React.RefObject<HTMLVideoElement>;
+    videoRef: React.RefObject<HTMLVideoElement | null>;
 }
 
 export function useCamera(): UseCameraReturn {
