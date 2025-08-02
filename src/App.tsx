@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { Camera, Zap, AlertCircle } from 'lucide-react';
 import { CameraView } from './components/CameraView';
 import { FoodResult } from './components/FoodResult';
+import { ComparisonResults } from './components/ComparisonResults';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { Button } from './components/ui/Button';
 import { useFoodDetection } from './hooks/useFoodDetection';
+import { useProductComparison } from './hooks/useProductComparison';
 import { validateEnvVars, supportsCameraAPI } from './utils/common';
 import type { CapturedImage } from './types/camera';
+import type { FoodAnalysisResponse, FoodItem } from './types/food';
 
 function App() {
   const [showResult, setShowResult] = useState(false);
@@ -18,6 +21,18 @@ function App() {
     clearError
   } = useFoodDetection();
 
+  const {
+    comparisonState,
+    isLoading: isComparing,
+    error: comparisonError,
+    startComparison,
+    addSecondProduct,
+    replaceFirstProduct,
+    replaceSecondProduct,
+    resetComparison,
+    cancelComparison,
+  } = useProductComparison();
+
   // Check environment and browser support
   const envValidation = validateEnvVars();
   const cameraSupported = supportsCameraAPI();
@@ -27,8 +42,37 @@ function App() {
     const result = await analyzeImage(image);
 
     if (result) {
-      setShowResult(true);
+      // Check if we're in comparison mode
+      if (comparisonState.mode === 'awaiting-second-product') {
+        // This is the second product for comparison
+        const foodItem: FoodItem = {
+          name: result.detected_food,
+          category: result.category,
+          confidence: result.confidence,
+          description: result.explanation,
+          analysisData: result,
+        };
+
+        await addSecondProduct(foodItem, result);
+        // Don't show normal result, comparison will be shown
+      } else {
+        // Normal single product analysis
+        setShowResult(true);
+      }
     }
+  };
+
+  const handleStartComparison = (result: FoodAnalysisResponse) => {
+    const foodItem: FoodItem = {
+      name: result.detected_food,
+      category: result.category,
+      confidence: result.confidence,
+      description: result.explanation,
+      analysisData: result,
+    };
+
+    startComparison(foodItem, result);
+    setShowResult(false); // Close current result modal
   };
 
   const handleCloseResult = () => {
@@ -132,35 +176,46 @@ function App() {
                 onCapture={handleImageCapture}
                 isCapturing={detectionState.isDetecting}
                 className="w-full h-full"
+                comparisonState={comparisonState}
+                onCancelComparison={cancelComparison}
               />
             </div>
 
             {/* Detection Status */}
-            {detectionState.isDetecting && (
+            {(detectionState.isDetecting || isComparing) && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
                 <div className="text-center text-white">
                   <LoadingSpinner size="lg" className="text-white mb-3" />
-                  <p className="text-lg font-medium">Analyzing Food...</p>
-                  <p className="text-sm opacity-75">This may take a few seconds</p>
+                  {isComparing ? (
+                    <>
+                      <p className="text-lg font-medium">Comparing Products...</p>
+                      <p className="text-sm opacity-75">Analyzing differences</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-lg font-medium">Analyzing Food...</p>
+                      <p className="text-sm opacity-75">This may take a few seconds</p>
+                    </>
+                  )}
                 </div>
               </div>
             )}
           </div>
 
           {/* Error Display */}
-          {detectionState.error && (
+          {(detectionState.error || comparisonError) && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
               <div className="flex items-start">
                 <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                 <div className="ml-3 flex-1">
                   <h3 className="text-sm font-medium text-red-800">
-                    Analysis Failed
+                    {comparisonError ? 'Comparison Failed' : 'Analysis Failed'}
                   </h3>
                   <p className="text-sm text-red-700 mt-1">
-                    {detectionState.error}
+                    {comparisonError || detectionState.error}
                   </p>
                   <Button
-                    onClick={clearError}
+                    onClick={comparisonError ? resetComparison : clearError}
                     size="sm"
                     variant="outline"
                     className="mt-2 border-red-300 text-red-700 hover:bg-red-100"
@@ -246,12 +301,24 @@ function App() {
       </main>
 
       {/* Result Modal */}
-      {showResult && detectionState.result && (
+      {showResult && detectionState.result && comparisonState.mode === 'normal' && (
         <FoodResult
           result={detectionState.result}
           onClose={handleCloseResult}
           onNewAnalysis={handleNewAnalysis}
+          onStartComparison={handleStartComparison}
           processingTime={detectionState.processingTime ?? undefined}
+        />
+      )}
+
+      {/* Comparison Results Modal */}
+      {comparisonState.mode === 'showing-comparison' && (
+        <ComparisonResults
+          comparisonState={comparisonState}
+          onReplaceFirst={replaceFirstProduct}
+          onReplaceSecond={replaceSecondProduct}
+          onNewComparison={resetComparison}
+          onExit={resetComparison}
         />
       )}
     </div>

@@ -10,10 +10,11 @@ interface FoodResultProps {
     result: FoodAnalysisResponse;
     onClose: () => void;
     onNewAnalysis: () => void;
+    onStartComparison?: (result: FoodAnalysisResponse) => void;
     processingTime?: number;
 }
 
-export function FoodResult({ result, onClose, onNewAnalysis, processingTime }: FoodResultProps) {
+export function FoodResult({ result, onClose, onNewAnalysis, onStartComparison, processingTime }: FoodResultProps) {
     const [showDetails, setShowDetails] = useState(false);
     const [showAbout, setShowAbout] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -150,20 +151,20 @@ LinkedIn: https://www.linkedin.com/in/adebmbng/
                         {/* Preservation Analysis */}
                         {result.preservation && (
                             <div className={`p-3 rounded-lg ${result.preservation.riskLevel === 'high' ? 'bg-red-50' :
-                                    result.preservation.riskLevel === 'medium' ? 'bg-yellow-50' : 'bg-green-50'
+                                result.preservation.riskLevel === 'medium' ? 'bg-yellow-50' : 'bg-green-50'
                                 }`}>
                                 <div className="flex items-start gap-2">
                                     <Shield className={`w-4 h-4 mt-0.5 flex-shrink-0 ${result.preservation.riskLevel === 'high' ? 'text-red-600' :
-                                            result.preservation.riskLevel === 'medium' ? 'text-yellow-600' : 'text-green-600'
+                                        result.preservation.riskLevel === 'medium' ? 'text-yellow-600' : 'text-green-600'
                                         }`} />
                                     <div>
                                         <p className={`text-sm font-medium mb-1 ${result.preservation.riskLevel === 'high' ? 'text-red-800' :
-                                                result.preservation.riskLevel === 'medium' ? 'text-yellow-800' : 'text-green-800'
+                                            result.preservation.riskLevel === 'medium' ? 'text-yellow-800' : 'text-green-800'
                                             }`}>
                                             Preservatives: {result.preservation.riskLevel.charAt(0).toUpperCase() + result.preservation.riskLevel.slice(1)} Risk
                                         </p>
                                         <p className={`text-sm ${result.preservation.riskLevel === 'high' ? 'text-red-700' :
-                                                result.preservation.riskLevel === 'medium' ? 'text-yellow-700' : 'text-green-700'
+                                            result.preservation.riskLevel === 'medium' ? 'text-yellow-700' : 'text-green-700'
                                             }`}>
                                             {result.preservation.simpleExplanation}
                                         </p>
@@ -181,20 +182,20 @@ LinkedIn: https://www.linkedin.com/in/adebmbng/
                         {/* Sugar Analysis */}
                         {result.sugar && (
                             <div className={`p-3 rounded-lg ${result.sugar.isExcessive ? 'bg-red-50' :
-                                    result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'bg-yellow-50' : 'bg-green-50'
+                                result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'bg-yellow-50' : 'bg-green-50'
                                 }`}>
                                 <div className="flex items-start gap-2">
                                     <Candy className={`w-4 h-4 mt-0.5 flex-shrink-0 ${result.sugar.isExcessive ? 'text-red-600' :
-                                            result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'text-yellow-600' : 'text-green-600'
+                                        result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'text-yellow-600' : 'text-green-600'
                                         }`} />
                                     <div>
                                         <p className={`text-sm font-medium mb-1 ${result.sugar.isExcessive ? 'text-red-800' :
-                                                result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'text-yellow-800' : 'text-green-800'
+                                            result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'text-yellow-800' : 'text-green-800'
                                             }`}>
                                             Sugar for 4-6 year old: {result.sugar.dailyPercentageFor4To6YearOld.toFixed(0)}% of daily limit
                                         </p>
                                         <p className={`text-sm ${result.sugar.isExcessive ? 'text-red-700' :
-                                                result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'text-yellow-700' : 'text-green-700'
+                                            result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'text-yellow-700' : 'text-green-700'
                                             }`}>
                                             {result.sugar.simpleExplanation}
                                         </p>
@@ -214,35 +215,49 @@ LinkedIn: https://www.linkedin.com/in/adebmbng/
                         )}
 
                         {/* Action Buttons */}
-                        <div className="flex gap-2 pt-2">
-                            <Button
-                                onClick={onNewAnalysis}
-                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                            >
-                                Analyze Another
-                            </Button>
+                        <div className="space-y-2">
+                            {/* Primary Actions */}
+                            <div className="flex gap-2">
+                                <Button
+                                    onClick={onNewAnalysis}
+                                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                                >
+                                    Analyze Another
+                                </Button>
 
-                            <Button
-                                onClick={handleCopy}
-                                variant="outline"
-                                size="icon"
-                                className="flex-shrink-0"
-                            >
-                                {copied ? (
-                                    <CheckCircle className="w-4 h-4 text-green-600" />
-                                ) : (
-                                    <Copy className="w-4 h-4" />
-                                )}
-                            </Button>
+                                <Button
+                                    onClick={handleCopy}
+                                    variant="outline"
+                                    size="icon"
+                                    className="flex-shrink-0"
+                                >
+                                    {copied ? (
+                                        <CheckCircle className="w-4 h-4 text-green-600" />
+                                    ) : (
+                                        <Copy className="w-4 h-4" />
+                                    )}
+                                </Button>
 
-                            <Button
-                                onClick={handleShare}
-                                variant="outline"
-                                size="icon"
-                                className="flex-shrink-0"
-                            >
-                                <Share2 className="w-4 h-4" />
-                            </Button>
+                                <Button
+                                    onClick={handleShare}
+                                    variant="outline"
+                                    size="icon"
+                                    className="flex-shrink-0"
+                                >
+                                    <Share2 className="w-4 h-4" />
+                                </Button>
+                            </div>
+
+                            {/* Comparison Button */}
+                            {onStartComparison && (
+                                <Button
+                                    onClick={() => onStartComparison(result)}
+                                    variant="outline"
+                                    className="w-full text-green-700 border-green-300 hover:bg-green-50"
+                                >
+                                    Compare with Another Product
+                                </Button>
+                            )}
                         </div>
 
                         {/* Category Description */}

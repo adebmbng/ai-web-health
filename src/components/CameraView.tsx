@@ -3,16 +3,20 @@ import { Camera, CameraOff, RotateCcw, Settings } from 'lucide-react';
 import { useCamera } from '../hooks/useCamera';
 import { Button } from './ui/Button';
 import { LoadingSpinner } from './ui/LoadingSpinner';
+import { AwaitingSecondProduct } from './AwaitingSecondProduct';
 import { cn } from '../utils/common';
 import type { CapturedImage } from '../types/camera';
+import type { ComparisonState } from '../types/food';
 
 interface CameraViewProps {
     onCapture: (image: CapturedImage) => void;
     isCapturing?: boolean;
     className?: string;
+    comparisonState?: ComparisonState;
+    onCancelComparison?: () => void;
 }
 
-export function CameraView({ onCapture, isCapturing = false, className }: CameraViewProps) {
+export function CameraView({ onCapture, isCapturing = false, className, comparisonState, onCancelComparison }: CameraViewProps) {
     const {
         isActive,
         isLoading,
@@ -27,18 +31,32 @@ export function CameraView({ onCapture, isCapturing = false, className }: Camera
 
     const [showSettings, setShowSettings] = useState(false);
 
-    // Auto-start camera on component mount
+    // Auto-start camera on component mount only
     useEffect(() => {
-        if (!isActive && !isLoading) {
-            startCamera();
-        }
+        let mounted = true;
 
-        // Cleanup on unmount
-        return () => {
-            if (isActive) {
-                stopCamera();
+        const initCamera = async () => {
+            if (mounted && !isActive && !isLoading) {
+                await startCamera();
             }
         };
+
+        initCamera();
+
+        return () => {
+            mounted = false;
+        };
+        // Only run on mount - empty dependency array
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Cleanup on unmount  
+    useEffect(() => {
+        return () => {
+            // Always stop camera on unmount
+            stopCamera();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleCapture = async () => {
@@ -136,6 +154,16 @@ export function CameraView({ onCapture, isCapturing = false, className }: Camera
                     </div>
                 </div>
             )}
+
+            {/* Comparison Overlay */}
+            {comparisonState?.mode === 'awaiting-second-product' &&
+                comparisonState.firstProduct &&
+                onCancelComparison && (
+                    <AwaitingSecondProduct
+                        firstProduct={comparisonState.firstProduct}
+                        onCancel={onCancelComparison}
+                    />
+                )}
 
             {/* Camera Controls */}
             {isActive && (

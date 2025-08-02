@@ -261,4 +261,58 @@ Be precise, scientific, and always provide a confidence score between 0 and 1.`;
             return false;
         }
     }
+
+    /**
+     * General text analysis using OpenRouter LLM
+     */
+    async analyzeText(prompt: string): Promise<string> {
+        try {
+            if (!API_KEY) {
+                throw new Error('OpenRouter API key not configured');
+            }
+
+            const messages: OpenRouterMessage[] = [
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ];
+
+            const requestBody: OpenRouterRequest = {
+                model: MODEL,
+                messages,
+                max_tokens: 1000,
+                temperature: 0.1,
+                top_p: 0.9
+            };
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json',
+                    'HTTP-Referer': window.location.origin,
+                    'X-Title': 'AI Food Detection Camera'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`);
+            }
+
+            const data = await response.json();
+            const content = data.choices?.[0]?.message?.content;
+
+            if (!content) {
+                throw new Error('No response content from OpenRouter API');
+            }
+
+            return content;
+        } catch (error) {
+            console.error('Error analyzing text with OpenRouter:', error);
+            throw error;
+        }
+    }
 }

@@ -13,6 +13,7 @@ export interface FoodItem {
         fiber?: number;
         sugar?: number;
     };
+    analysisData?: FoodAnalysisResponse; // Store original analysis for comparison
 }
 
 export interface DetectionResult {
@@ -44,6 +45,31 @@ export interface FoodAnalysisResponse {
     nutritional_notes?: string;
     preservation?: PreservationAnalysis;
     sugar?: SugarAnalysis;
+}
+
+export interface ComparisonAnalysis {
+    winner: 0 | 1; // Index of better product (0 = first, 1 = second)
+    reasoning: string;
+    metrics: {
+        processingLevelWinner: 0 | 1;
+        sugarWinner: 0 | 1;
+        preservativeWinner: 0 | 1;
+    };
+    healthScores: [number, number]; // 0-100 scale
+    keyDifferences: string[];
+    recommendation: string; // Clear action for user
+}
+
+export interface ComparisonState {
+    mode: 'normal' | 'awaiting-second-product' | 'showing-comparison';
+    firstProduct: FoodItem | null;
+    secondProduct: FoodItem | null;
+    comparisonResult?: ComparisonAnalysis;
+}
+
+export interface ComparisonRequest {
+    product1: FoodAnalysisResponse;
+    product2: FoodAnalysisResponse;
 }
 
 export const FOOD_CATEGORIES: Record<FoodCategory, {
