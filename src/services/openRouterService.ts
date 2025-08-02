@@ -115,7 +115,7 @@ export class OpenRouterService {
      * Get system prompt for food analysis
      */
     private getSystemPrompt(): string {
-        return `You are an expert food nutritionist and image recognition specialist. Your task is to analyze food images and classify them according to the NOVA food classification system.
+        return `You are an expert food nutritionist and image recognition specialist. Your task is to analyze food images and classify them according to the NOVA food classification system, plus analyze preservatives and sugar content.
 
 NOVA Classification System:
 1. **Unprocessed**: Fresh, whole foods in their natural state (fruits, vegetables, nuts, seeds, fresh meat, fish)
@@ -123,13 +123,37 @@ NOVA Classification System:
 3. **Processed**: Foods with added salt, sugar, oil, or other substances (cheese, bread, canned vegetables in brine, smoked meats)
 4. **Ultra-Processed (UPF)**: Formulated from industrial ingredients with additives (packaged snacks, soft drinks, ready meals, processed meats with preservatives)
 
+PRESERVATION ANALYSIS:
+- Identify any preservatives in ingredients
+- Chemical preservatives (problematic): sodium benzoate, potassium sorbate, BHA, BHT, nitrates, nitrites, sulfites
+- Natural preservatives (less concern): salt, sugar, vinegar, citric acid
+- Rate overall preservation risk: low (none/natural only), medium (1-2 chemical), high (multiple chemical)
+
+SUGAR ANALYSIS FOR 4-6 YEAR OLD CHILDREN:
+- WHO daily limit for 4-6yo: 25g free sugars maximum
+- Calculate sugar content per serving
+- Flag as excessive if >50% of daily limit (>12.5g) in one serving
+- Consider both added sugars and natural sugars in processed foods
+
 You must respond with a JSON object in this exact format:
 {
   "detected_food": "specific food name",
   "category": "unprocessed|minimal|processed|upf",
   "confidence": 0.85,
   "explanation": "Brief explanation of why this food fits this category",
-  "nutritional_notes": "Optional additional nutritional information"
+  "nutritional_notes": "Optional additional nutritional information",
+  "preservation": {
+    "hasProblematicPreservatives": boolean,
+    "preservativeTypes": ["chemical", "salt", "sugar"],
+    "riskLevel": "low|medium|high",
+    "simpleExplanation": "Brief parent-friendly explanation about preservatives"
+  },
+  "sugar": {
+    "sugarContent": number,
+    "dailyPercentageFor4To6YearOld": number,
+    "isExcessive": boolean,
+    "simpleExplanation": "Brief explanation for parents about sugar content"
+  }
 }
 
 Be precise, scientific, and always provide a confidence score between 0 and 1.`;
@@ -139,7 +163,7 @@ Be precise, scientific, and always provide a confidence score between 0 and 1.`;
      * Get user prompt for food analysis
      */
     private getUserPrompt(): string {
-        return `Please analyze this food image and classify it according to the NOVA system. Identify the specific food item and determine its processing level. Consider all visible ingredients and preparation methods. Respond only with the JSON format specified in the system prompt.`;
+        return `Please analyze this food image and classify it according to the NOVA system. Also analyze preservatives and sugar content for a 4-6 year old child. Identify the specific food item, determine its processing level, check for problematic preservatives, and calculate sugar impact. If you can see ingredient lists or nutrition labels, use them for more accurate analysis. Respond only with the JSON format specified in the system prompt.`;
     }
 
     /**
@@ -168,7 +192,19 @@ Be precise, scientific, and always provide a confidence score between 0 and 1.`;
                 category: normalizedCategory,
                 confidence: Math.max(0, Math.min(1, parsed.confidence)), // Clamp between 0 and 1
                 explanation: parsed.explanation || 'No explanation provided',
-                nutritional_notes: parsed.nutritional_notes
+                nutritional_notes: parsed.nutritional_notes,
+                preservation: parsed.preservation ? {
+                    hasProblematicPreservatives: Boolean(parsed.preservation.hasProblematicPreservatives),
+                    preservativeTypes: Array.isArray(parsed.preservation.preservativeTypes) ? parsed.preservation.preservativeTypes : [],
+                    riskLevel: ['low', 'medium', 'high'].includes(parsed.preservation.riskLevel) ? parsed.preservation.riskLevel : 'low',
+                    simpleExplanation: parsed.preservation.simpleExplanation || 'No preservative information available'
+                } : undefined,
+                sugar: parsed.sugar ? {
+                    sugarContent: Number(parsed.sugar.sugarContent) || 0,
+                    dailyPercentageFor4To6YearOld: Number(parsed.sugar.dailyPercentageFor4To6YearOld) || 0,
+                    isExcessive: Boolean(parsed.sugar.isExcessive),
+                    simpleExplanation: parsed.sugar.simpleExplanation || 'No sugar information available'
+                } : undefined
             };
 
         } catch (error) {

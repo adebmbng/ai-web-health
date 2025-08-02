@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CheckCircle, AlertCircle, Info, X, Copy, Share2, Heart } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info, X, Copy, Share2, Heart, Shield, Candy } from 'lucide-react';
 import type { FoodAnalysisResponse } from '../types/food';
 import { getCategoryColors, getCategoryInfo, getConfidenceLevel, formatConfidence } from '../utils/categoryMapping';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
@@ -29,6 +29,8 @@ Category: ${categoryInfo.label}
 Confidence: ${formatConfidence(result.confidence)}
 Description: ${result.explanation}
 ${result.nutritional_notes ? `Notes: ${result.nutritional_notes}` : ''}
+${result.preservation ? `Preservatives: ${result.preservation.riskLevel} risk - ${result.preservation.simpleExplanation}` : ''}
+${result.sugar ? `Sugar for 4-6yo: ${result.sugar.dailyPercentageFor4To6YearOld.toFixed(0)}% of daily limit (${result.sugar.sugarContent}g)` : ''}
 
 Analyzed with AI Food Detection - helping families avoid UPF foods. Built by @dbmkrn
 LinkedIn: https://www.linkedin.com/in/adebmbng/
@@ -145,6 +147,65 @@ LinkedIn: https://www.linkedin.com/in/adebmbng/
                             </div>
                         )}
 
+                        {/* Preservation Analysis */}
+                        {result.preservation && (
+                            <div className={`p-3 rounded-lg ${result.preservation.riskLevel === 'high' ? 'bg-red-50' :
+                                    result.preservation.riskLevel === 'medium' ? 'bg-yellow-50' : 'bg-green-50'
+                                }`}>
+                                <div className="flex items-start gap-2">
+                                    <Shield className={`w-4 h-4 mt-0.5 flex-shrink-0 ${result.preservation.riskLevel === 'high' ? 'text-red-600' :
+                                            result.preservation.riskLevel === 'medium' ? 'text-yellow-600' : 'text-green-600'
+                                        }`} />
+                                    <div>
+                                        <p className={`text-sm font-medium mb-1 ${result.preservation.riskLevel === 'high' ? 'text-red-800' :
+                                                result.preservation.riskLevel === 'medium' ? 'text-yellow-800' : 'text-green-800'
+                                            }`}>
+                                            Preservatives: {result.preservation.riskLevel.charAt(0).toUpperCase() + result.preservation.riskLevel.slice(1)} Risk
+                                        </p>
+                                        <p className={`text-sm ${result.preservation.riskLevel === 'high' ? 'text-red-700' :
+                                                result.preservation.riskLevel === 'medium' ? 'text-yellow-700' : 'text-green-700'
+                                            }`}>
+                                            {result.preservation.simpleExplanation}
+                                        </p>
+                                        {result.preservation.preservativeTypes.length > 0 && (
+                                            <div className="mt-1">
+                                                <span className="text-xs font-medium">Types: </span>
+                                                <span className="text-xs">{result.preservation.preservativeTypes.join(', ')}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Sugar Analysis */}
+                        {result.sugar && (
+                            <div className={`p-3 rounded-lg ${result.sugar.isExcessive ? 'bg-red-50' :
+                                    result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'bg-yellow-50' : 'bg-green-50'
+                                }`}>
+                                <div className="flex items-start gap-2">
+                                    <Candy className={`w-4 h-4 mt-0.5 flex-shrink-0 ${result.sugar.isExcessive ? 'text-red-600' :
+                                            result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'text-yellow-600' : 'text-green-600'
+                                        }`} />
+                                    <div>
+                                        <p className={`text-sm font-medium mb-1 ${result.sugar.isExcessive ? 'text-red-800' :
+                                                result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'text-yellow-800' : 'text-green-800'
+                                            }`}>
+                                            Sugar for 4-6 year old: {result.sugar.dailyPercentageFor4To6YearOld.toFixed(0)}% of daily limit
+                                        </p>
+                                        <p className={`text-sm ${result.sugar.isExcessive ? 'text-red-700' :
+                                                result.sugar.dailyPercentageFor4To6YearOld > 25 ? 'text-yellow-700' : 'text-green-700'
+                                            }`}>
+                                            {result.sugar.simpleExplanation}
+                                        </p>
+                                        <div className="mt-1 text-xs">
+                                            Sugar content: {result.sugar.sugarContent}g per serving
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Processing Time */}
                         {processingTime && (
                             <div className="text-center text-xs text-gray-500">
@@ -239,14 +300,14 @@ LinkedIn: https://www.linkedin.com/in/adebmbng/
                                         <div>
                                             <p className="text-sm text-blue-800 font-medium mb-1">Built for Family Health</p>
                                             <p className="text-sm text-blue-700 mb-2">
-                                                Created by <strong>Ade Bambang Kurnia</strong> to help his daughter Alula manage H. Pylori bacteria. 
-                                                Following doctor's advice to avoid chocolate and minimize Ultra-Processed Foods (UPF), 
+                                                Created by <strong>Ade Bambang Kurnia</strong> to help his daughter Alula manage H. Pylori bacteria.
+                                                Following doctor's advice to avoid chocolate and minimize Ultra-Processed Foods (UPF),
                                                 this app helps families make informed food choices.
                                             </p>
                                             <p className="text-xs text-blue-600">
-                                                <a 
-                                                    href="https://www.linkedin.com/in/adebmbng/" 
-                                                    target="_blank" 
+                                                <a
+                                                    href="https://www.linkedin.com/in/adebmbng/"
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="hover:underline"
                                                 >

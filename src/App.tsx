@@ -98,7 +98,7 @@ function App() {
                   AI Food Detection
                 </h1>
                 <p className="text-xs text-gray-500">
-                  Helping families avoid UPF foods
+                  Check processing levels, preservatives & sugar for kids
                 </p>
               </div>
             </div>
@@ -118,10 +118,10 @@ function App() {
           {/* Instructions */}
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Analyze Food Processing Level
+              Comprehensive Food Analysis
             </h2>
             <p className="text-gray-600 text-sm">
-              Point your camera at food to check if it's safe for dietary restrictions like H. Pylori
+              Analyze processing levels, preservatives, and sugar content for children (4-6 years old)
             </p>
           </div>
 
@@ -173,50 +173,66 @@ function App() {
           )}
 
           {/* Features */}
-          <div className="mt-8 grid grid-cols-2 gap-4 text-center">
-            <div className="p-4 bg-white rounded-lg shadow-sm">
-              <div className="text-2xl mb-2">🥬</div>
-              <h3 className="font-medium text-gray-900 text-sm">Unprocessed</h3>
-              <p className="text-xs text-gray-600 mt-1">
-                Fresh, natural foods
-              </p>
+          <div className="mt-8 space-y-4">
+            {/* NOVA Categories */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">NOVA Food Processing</h3>
+              <div className="grid grid-cols-2 gap-3 text-center">
+                <div className="p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-xl mb-1">🥬</div>
+                  <h4 className="font-medium text-gray-900 text-xs">Unprocessed</h4>
+                  <p className="text-xs text-gray-600 mt-1">Fresh, natural foods</p>
+                </div>
+
+                <div className="p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-xl mb-1">🥫</div>
+                  <h4 className="font-medium text-gray-900 text-xs">Minimally Processed</h4>
+                  <p className="text-xs text-gray-600 mt-1">Basic preservation</p>
+                </div>
+
+                <div className="p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-xl mb-1">🧀</div>
+                  <h4 className="font-medium text-gray-900 text-xs">Processed</h4>
+                  <p className="text-xs text-gray-600 mt-1">Added ingredients</p>
+                </div>
+
+                <div className="p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-xl mb-1">🍟</div>
+                  <h4 className="font-medium text-gray-900 text-xs">Ultra-Processed</h4>
+                  <p className="text-xs text-gray-600 mt-1">Many additives (UPF)</p>
+                </div>
+              </div>
             </div>
 
-            <div className="p-4 bg-white rounded-lg shadow-sm">
-              <div className="text-2xl mb-2">🥫</div>
-              <h3 className="font-medium text-gray-900 text-sm">Minimally Processed</h3>
-              <p className="text-xs text-gray-600 mt-1">
-                Basic preservation
-              </p>
-            </div>
+            {/* New Analysis Features */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Additional Analysis</h3>
+              <div className="grid grid-cols-2 gap-3 text-center">
+                <div className="p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-xl mb-1">🛡️</div>
+                  <h4 className="font-medium text-gray-900 text-xs">Preservatives</h4>
+                  <p className="text-xs text-gray-600 mt-1">Risk level detection</p>
+                </div>
 
-            <div className="p-4 bg-white rounded-lg shadow-sm">
-              <div className="text-2xl mb-2">🧀</div>
-              <h3 className="font-medium text-gray-900 text-sm">Processed</h3>
-              <p className="text-xs text-gray-600 mt-1">
-                Added ingredients
-              </p>
-            </div>
-
-            <div className="p-4 bg-white rounded-lg shadow-sm">
-              <div className="text-2xl mb-2">🍟</div>
-              <h3 className="font-medium text-gray-900 text-sm">Ultra-Processed</h3>
-              <p className="text-xs text-gray-600 mt-1">
-                Many additives (UPF)
-              </p>
+                <div className="p-3 bg-white rounded-lg shadow-sm">
+                  <div className="text-xl mb-1">🍭</div>
+                  <h4 className="font-medium text-gray-900 text-xs">Sugar Content</h4>
+                  <p className="text-xs text-gray-600 mt-1">% of daily limit (4-6yo)</p>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Footer */}
           <div className="mt-8 text-center text-xs text-gray-500">
-            <p>Classification based on the NOVA food system</p>
+            <p>NOVA classification + preservative & sugar analysis</p>
             <p className="mt-1">
               Helping families make informed food choices - Created by Ade Bambang Kurnia
             </p>
             <p className="mt-1">
-              <a 
-                href="https://www.linkedin.com/in/adebmbng/" 
-                target="_blank" 
+              <a
+                href="https://www.linkedin.com/in/adebmbng/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 hover:underline"
               >

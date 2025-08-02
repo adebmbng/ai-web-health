@@ -22,12 +22,28 @@ export interface DetectionResult {
     processingTime?: number;
 }
 
+export interface PreservationAnalysis {
+    hasProblematicPreservatives: boolean;
+    preservativeTypes: string[]; // e.g., ['chemical', 'salt', 'sugar']
+    riskLevel: 'low' | 'medium' | 'high';
+    simpleExplanation: string;
+}
+
+export interface SugarAnalysis {
+    sugarContent: number; // grams per serving
+    dailyPercentageFor4To6YearOld: number; // percentage of WHO daily limit (25g)
+    isExcessive: boolean;
+    simpleExplanation: string;
+}
+
 export interface FoodAnalysisResponse {
     detected_food: string;
     category: FoodCategory;
     confidence: number;
     explanation: string;
     nutritional_notes?: string;
+    preservation?: PreservationAnalysis;
+    sugar?: SugarAnalysis;
 }
 
 export const FOOD_CATEGORIES: Record<FoodCategory, {
